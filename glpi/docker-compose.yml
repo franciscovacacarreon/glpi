@@ -1,21 +1,6 @@
 version: '3.8'
 
 services:
-  glpi:
-    image: diouxx/glpi:latest
-    container_name: glpi
-    ports:
-      - "8081:80"
-    volumes:
-      - glpi_data:/var/www/html
-      - glpi_plugins:/var/www/html/plugins
-      - glpi_marketplace:/var/www/html/marketplace
-    environment:
-      - TZ=America/Mexico_City
-    depends_on:
-      - glpi_db
-    restart: unless-stopped
-
   glpi_db:
     image: mysql:8.0
     container_name: glpi_db
@@ -27,10 +12,62 @@ services:
       MYSQL_PASSWORD: glpi_password
     volumes:
       - glpi_db_data:/var/lib/mysql
-    restart: unless-stopped
+    networks:
+      - glpi-ocs-net
+
+  glpi:
+    image: diouxx/glpi:latest
+    container_name: glpi
+    ports:
+      - "8081:80"
+    volumes:
+      - glpi_data:/var/www/html
+      - ./plugins:/var/www/html/glpi/plugins
+      - glpi_marketplace:/var/www/html/marketplace
+    environment:
+      - TZ=America/Mexico_City
+    depends_on:
+      - glpi_db
+    networks:
+      - glpi-ocs-net
+
+  db-ocs:
+    image: mysql:5.7
+    container_name: db-ocs
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlocs
+      MYSQL_USER: ocsinventory
+      MYSQL_PASSWORD: ocsinventory
+      MYSQL_DATABASE: ocsweb
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - glpi-ocs-net
+
+  web-ocs:
+    image: slllaps/ocs-inventory:2.3
+    container_name: web-ocs
+    environment:
+      ENV_OCS_DB_HOST: db-ocs
+      ENV_OCS_DB_PORT: 3306
+      ENV_OCS_DB_NAME: ocsweb
+      ENV_OCS_DB_USER: ocsinventory
+      ENV_OCS_DB_PWD: ocsinventory
+    ports:
+      - "80:80"
+    depends_on:
+      - db-ocs
+    networks:
+      - glpi-ocs-net
 
 volumes:
   glpi_data:
   glpi_db_data:
   glpi_plugins:
   glpi_marketplace:
+  db-data:
+  web-data:
+
+networks:
+  glpi-ocs-net:
+    driver: bridge
