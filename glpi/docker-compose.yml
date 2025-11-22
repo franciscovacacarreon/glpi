@@ -1,73 +1,37 @@
 version: '3.8'
 
 services:
-  glpi_db:
-    image: mysql:8.0
-    container_name: glpi_db
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: glpi
-      MYSQL_USER: glpi
-      MYSQL_PASSWORD: glpi_password
-    volumes:
-      - glpi_db_data:/var/lib/mysql
-    networks:
-      - glpi-ocs-net
-
   glpi:
-    image: diouxx/glpi:latest
+    build: .                                # Usa el Dockerfile
     container_name: glpi
     ports:
       - "8081:80"
-    volumes:
-      - glpi_data:/var/www/html
-      - ./plugins:/var/www/html/glpi/plugins
-      - glpi_marketplace:/var/www/html/marketplace
     environment:
-      - TZ=America/Mexico_City
+      - TZ=America/La_Paz
+    volumes:
+      - ./glpi/files:/var/www/html/files     # Persistencia
+      - ./glpi/config:/var/www/html/config
+      - ./plugins:/var/www/html/glpi/plugins      # Plugins externos opcionales
+      - ./glpi-config/php/glpi.ini:/usr/local/etc/php/conf.d/glpi.ini
     depends_on:
       - glpi_db
-    networks:
-      - glpi-ocs-net
+    restart: unless-stopped
 
-  db-ocs:
-    image: mysql:5.7
-    container_name: db-ocs
+  glpi_db:
+    image: mysql:8.0
+    container_name: glpi_db
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_ROOT_PASSWORD: mysqlocs
-      MYSQL_USER: ocsinventory
-      MYSQL_PASSWORD: ocsinventory
-      MYSQL_DATABASE: ocsweb
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: glpidb
+      MYSQL_USER: glpi
+      MYSQL_PASSWORD: glpipassword
     volumes:
-      - db-data:/var/lib/mysql
-    networks:
-      - glpi-ocs-net
-
-  web-ocs:
-    image: slllaps/ocs-inventory:2.3
-    container_name: web-ocs
-    environment:
-      ENV_OCS_DB_HOST: db-ocs
-      ENV_OCS_DB_PORT: 3306
-      ENV_OCS_DB_NAME: ocsweb
-      ENV_OCS_DB_USER: ocsinventory
-      ENV_OCS_DB_PWD: ocsinventory
-    ports:
-      - "80:80"
-    depends_on:
-      - db-ocs
-    networks:
-      - glpi-ocs-net
+      - glpi_db_data:/var/lib/mysql
+    restart: unless-stopped
 
 volumes:
-  glpi_data:
   glpi_db_data:
-  glpi_plugins:
-  glpi_marketplace:
-  db-data:
-  web-data:
-
-networks:
-  glpi-ocs-net:
-    driver: bridge

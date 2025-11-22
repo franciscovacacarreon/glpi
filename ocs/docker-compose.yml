@@ -3,6 +3,7 @@ version: '2'
 services:
     db-ocs:
       image: mysql:5.7
+      container_name: db-ocs
       volumes:
         - db-data:/var/lib/mysql
       environment:
@@ -12,9 +13,12 @@ services:
         MYSQL_DATABASE: ocsweb
       ports:
         - "3306:3306"
+      networks:
+        - glpi-ocs-net
 
     web-ocs:
       image: slllaps/ocs-inventory:2.3
+      container_name: web-ocs
       volumes:
         - web-data:/usr/share/ocsinventory-reports/ocsreports
       environment:
@@ -24,12 +28,17 @@ services:
         ENV_OCS_DB_LOCAL: ocsweb
         ENV_OCS_DB_USER: ocsinventory
         ENV_OCS_DB_PWD: ocsinventory
-      links:
-        - db-ocs:db
       ports:
         - "80:80"
       depends_on:
-        - "db-ocs"
+        - db-ocs
+      networks:
+        - glpi-ocs-net
+
 volumes:
     db-data:
     web-data:
+
+networks:
+  glpi-ocs-net:
+    driver: bridge
