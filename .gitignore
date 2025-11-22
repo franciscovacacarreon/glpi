@@ -1,0 +1,39 @@
+# -------------------------------
+# GLPI data
+# -------------------------------
+glpi-code/db_data/
+glpi-code/files/
+glpi/storage/glpi/files/_cache/
+glpi/storage/glpi/files/_tmp/
+glpi/storage/glpi/files/_log/
+glpi/storage/glpi/files/_sessions/
+
+# Configuration & database
+glpi/storage/glpi/config/config_db.php
+glpi/storage/mysql/
+
+# -------------------------------
+# GLPI core vendor
+# -------------------------------
+glpi/glpi/vendor/
+glpi/glpi/marketplace/
+
+# -------------------------------
+# Logs
+# -------------------------------
+*.log
+
+# -------------------------------
+# System / IDE files
+# -------------------------------
+*.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# -------------------------------
+# Git CRLF handling
+# -------------------------------
+# Mantener LF en Linux/macOS y evitar conversiones automáticas en Windows
+# Ejecuta: git config --global core.autocrlf input
