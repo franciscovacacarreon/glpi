@@ -1,21 +1,33 @@
 # -------------------------------
-# GLPI data
+# GLPI
 # -------------------------------
-glpi-code/db_data/
-glpi-code/files/
+glpi/files/
+glpi/config/
 glpi/storage/
-
-
-# -------------------------------
-# GLPI core vendor
-# -------------------------------
 glpi/glpi/vendor/
 glpi/glpi/marketplace/
+glpi_db_data/
+
+# -------------------------------
+# iTop
+# -------------------------------
+itop/data/
+itop/conf/
+itop/extensions/
+itop/vendor/
+itop_db_data/
+
+# -------------------------------
+# OCS Inventory
+# -------------------------------
+ocs_web_data/
+ocs_db_data/
 
 # -------------------------------
 # Logs
 # -------------------------------
 *.log
+*.cache
 
 # -------------------------------
 # System / IDE files
@@ -25,6 +37,12 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# -------------------------------
+# Docker / Environment
+# -------------------------------
+docker-compose.override.yml
+*.env
 
 # -------------------------------
 # Git CRLF handling
